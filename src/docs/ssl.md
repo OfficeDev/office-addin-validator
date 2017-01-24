@@ -7,13 +7,13 @@ To fix this, you need to configure your developer workstation to trust the self-
 - OS X: [Apple Support - OS X Yosemite: If your Certificate Isn't Being Accepted](https://support.apple.com/kb/PH18677)
 - Windows: [TechNet - Manage Trusted Root Certificates](https://technet.microsoft.com/en-us/library/cc754841.aspx)
 
-## Trusting a Self-Signed Certificate on OS X using the Chrome browser
+## Trusting a Self-Signed Certificate on OS X
 
-Using Chrome, when you browse to a site that has an untrusted certificate, the browser will display an error with the certificate:
+When you browse to a site that has an untrusted certificate, the browser will display an error with the certificate:
 
   ![](assets/ssl-error.png)
 
-### Option #1: Simply Proceed
+### Option #1: Bypassing the error in Chrome
 
 choose the “Advanced” link, then choose “Proceed to local (unsafe)“.
 
@@ -21,10 +21,10 @@ choose the “Advanced” link, then choose “Proceed to local (unsafe)“.
 
 ### Option #2: Trsting a certificate
 
-1. Start Chrome and do the following:
+1. Start your browser and do the following:
 
   1. Open Developer Tools window by using keybaord shortcuts: Cmd + Opt + I.
-  1. Click to go to 'security' panel and 'overview' screen.
+  1. Go to the 'Overview' screen in the 'Security' panel.
 	1. Click 'View certificate'.
 
   ![](assets/ssl-devtool.png)
@@ -46,7 +46,7 @@ choose the “Advanced” link, then choose “Proceed to local (unsafe)“.
 
     ![](assets/ssl-keychain-02.png)
 
-At this point everything has been configured. Quit Chrome and all other browsers and try again to navigate to the local HTTPS site. The browser should report it as a valid certificate:
+At this point everything has been configured. Quit all browsers, then reopen and try to navigate to the local HTTPS site. The browser should report it as a valid certificate:
 
 ![](assets/ssl-good.png)
 
