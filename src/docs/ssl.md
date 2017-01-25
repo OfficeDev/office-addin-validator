@@ -1,8 +1,8 @@
 # Adding Self-Signed Certificates as Trusted Root Certificate
 
-This generator leverages [Browsersync](https://browsersync.io/) to start a web server, which requires a self-signed certificate. Your workstation will not trust this certificate and thus, the Office client where you are running your Office Add-in from will not load your add-in from an untrusted and unsecure location.
+Office clients require add-ins and webpages to come from a trusted and secure location. This generator leverages [Browsersync](https://browsersync.io/) to start a web server, which requires a self-signed certificate. Your workstation will not trust this certificate and thus, the Office client, in which you are running your Office Add-in, will not load your add-in.
 
-To fix this, you need to configure your developer workstation to trust the self-signed certifiacte from the gulp plugin. The steps for this differ depending on your developer environment (OSX / Windows / Linux). Use these instructions to trust the certificate:
+To fix this, you need to configure your developer workstation to trust the self-signed certificate. The steps for this differ depending on your developer environment (OSX / Windows / Linux). Use these instructions to trust the certificate:
 
 - OS X: [Apple Support - OS X Yosemite: If your Certificate Isn't Being Accepted](https://support.apple.com/kb/PH18677)
 - Windows: [TechNet - Manage Trusted Root Certificates](https://technet.microsoft.com/en-us/library/cc754841.aspx)
@@ -19,7 +19,7 @@ choose the “Advanced” link, then choose “Proceed to local (unsafe)“.
 
   ![](assets/ssl-chrome-bypass.gif)
 
-### Option #2: Trsting a certificate
+### Option #2: Trusting a certificate
 
 #### Get certificate in Chrome
 
@@ -47,7 +47,7 @@ You can locate the server.crt file at **~/your_yo_office_project/node_modules/br
 
   ![](assets/ssl-keychain-01.png)
 
-  1. Click the plus button at the bottom and select the **localhost.cer** file you copied to the desktop.
+  1. Click the plus button at the bottom and select the **localhost.cert** file you copied to the desktop.
   1. In the dialog that comes up, click **Always Trust**.
   1. After **localhost** gets added to the **System** keychain, double-click it to open it again.
   1. Expand the **Trust** section and for the first option, pick **Always Trust**.
