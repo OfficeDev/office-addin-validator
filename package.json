@@ -1,0 +1,44 @@
+{
+  "name": "manifest-validator",
+  "version": "1.0.0-beta.1",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "tsc": "tsc -p tsconfig.json",
+    "tsc-watch": "tsc -p tsconfig.json -w",
+    "test": "mocha -r ts-node/register generators/test/**.js",
+    "start": "rimraf app && concurrently \"npm run tsc-watch\""
+  },
+  "engines": {
+    "node": ">6.9.0"
+  },
+  "homepage": "https://github.com/officedev/manifest-validator",
+  "license": "MIT",
+  "author": "OfficeDev",
+  "main": "",
+  "keywords": [
+    "office",
+    "manifest",
+    "office-add-in",
+    "add-in",
+    "outlook",
+    "excel",
+    "word",
+    "powerpoint",
+    "onenote",
+    "project"
+  ],
+  "dependencies": {
+    "applicationinsights": "^0.17.1"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0",
+    "ts-node": "^2.0.0",
+    "typescript": "^2.1.4",
+    "rimraf": "^2.5.4",
+    "concurrently": "^3.3.0"
+  }
+}
