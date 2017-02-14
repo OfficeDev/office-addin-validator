@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/officedev/manifest-validator",
   "license": "MIT",
+  "bin": {
+    "validate-office-addin": "./app/index.js"
+  },
   "author": "OfficeDev",
   "main": "",
   "keywords": [
@@ -32,13 +35,15 @@
     "project"
   ],
   "dependencies": {
-    "applicationinsights": "^0.17.1"
+    "applicationinsights": "^0.17.1",
+    "commander": "^2.9.0"
   },
   "devDependencies": {
+    "@types/commander": "^2.3.31",
+    "concurrently": "^3.3.0",
     "mocha": "^3.2.0",
-    "ts-node": "^2.0.0",
-    "typescript": "^2.1.4",
     "rimraf": "^2.5.4",
-    "concurrently": "^3.3.0"
+    "ts-node": "^2.0.0",
+    "typescript": "^2.1.4"
   }
 }
