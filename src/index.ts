@@ -30,29 +30,35 @@ commander
         let validationResult = validationReport.result;
         let validationErrors = [];
         let validationWarnings = [];
+        let validationInfos = [];
 
         getNestedObj(validationReport, 'errors', validationErrors);
         getNestedObj(validationReport, 'warnings', validationWarnings);
+        getNestedObj(validationReport, 'infos', validationInfos);
 
-        console.log(validationErrors);
-        console.log(validationWarnings);
-        console.log(formattedBody);
+        if (validationResult === 'Passed') {
+          // supported products only exist when manifest is valid
+          let supportedProducts = formattedBody.checkReport.details.supportedProducts;
 
-        if (validationResult = 'Passed') {
-          console.log(`Validation: ${chalk.green('Passed')}`);
+          console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
+          console.log(`\nWarning(s):`);
+          logValidationReport(validationWarnings, 'yellow');
+          console.log(`\nAdditional Information:`);
+          logValidationReport(validationInfos, '');
+          console.log(`\nWith this manifest, the store will test your add-in against the following platforms:`);
+          logSupportedProduct(supportedProducts);
         } else {
-          console.log(`Validation: ${chalk.red('Failed')}`);
+          console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
+          console.log(`\nErrors(s):`);
+          logValidationReport(validationErrors, 'red');
+          console.log(`\nWarning(s):`);
+          logValidationReport(validationWarnings, 'yellow');
+          console.log(`\nAdditional Information:`);
+          logValidationReport(validationInfos, 'dim');
         }
     });
-
-        // console.log(prettyjson.render(formattedBody, {
-        //   keysColor: 'rainbow',
-        //   dashColor: 'magenta',
-        //   stringColor: 'white'
-        // }));
   })
   .parse(process.argv);
-
 
 function callOmexService (file, options, callback) {
   let formattedBody = {};
@@ -67,8 +73,38 @@ function callOmexService (file, options, callback) {
 function getNestedObj (obj, item, result) {
   for (let i = 0; i < obj[item].length; i++) {
     let itemTitle = obj[item][i].title;
-    result.push(JSON.stringify(itemTitle));
+    let itemDetail = obj[item][i].detail;
+    let itemLink = obj[item][i].link;
+    let itemCollection = {
+      'title': itemTitle,
+      'detail': itemDetail,
+      'link': itemLink
+    };
+    result.push(JSON.stringify(itemCollection));
   }
 
   return result;
+}
+
+function logValidationReport (obj, color) {
+  if (obj.length > 0) {
+    for (let i = 0; i < obj.length; i++) {
+      let jsonObj = JSON.parse(obj[i]);
+      console.log(`${chalk[color](jsonObj.title + ': ')}` + jsonObj['detail'] + ' (link: ' + jsonObj['link'] + ')');
+    }
+  } else {
+    // TODO: get language
+    console.log('N/A');
+  }
+}
+
+function logSupportedProduct (obj) {
+  if (obj.length > 0) {
+    for (let i = 0; i < obj.length; i++) {
+      console.log(obj[i].title + ', Version: ' + obj[i].version);
+    }
+  } else {
+    // TODO; get language
+    console.log('N/A');
+  }
 }
