@@ -6,7 +6,6 @@
  */
 
 import * as commander from 'commander';
-import * as prettyjson from 'prettyjson';
 import * as fs from 'fs';
 import * as request from 'request';
 import * as chalk from 'chalk';
@@ -19,7 +18,6 @@ let options = {
     'Content-Type': 'application/xml'
   }
 };
-
 
 commander
   .arguments('<manifest>')
@@ -36,26 +34,29 @@ commander
         getNestedObj(validationReport, 'warnings', validationWarnings);
         getNestedObj(validationReport, 'infos', validationInfos);
 
+        console.log('----------------------');
         if (validationResult === 'Passed') {
           // supported products only exist when manifest is valid
           let supportedProducts = formattedBody.checkReport.details.supportedProducts;
 
           console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
-          console.log(`\nWarning(s):`);
-          logValidationReport(validationWarnings, 'yellow');
-          console.log(`\nAdditional Information:`);
-          logValidationReport(validationInfos, '');
-          console.log(`\nWith this manifest, the store will test your add-in against the following platforms:`);
+          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+          logValidationReport(validationWarnings);
+          console.log(`  Additional Information:`);
+          logValidationReport(validationInfos);
+          console.log(`With this manifest, the store will test your add-in against the following platforms:`);
           logSupportedProduct(supportedProducts);
         } else {
           console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
-          console.log(`\nErrors(s):`);
-          logValidationReport(validationErrors, 'red');
-          console.log(`\nWarning(s):`);
-          logValidationReport(validationWarnings, 'yellow');
-          console.log(`\nAdditional Information:`);
-          logValidationReport(validationInfos, 'dim');
+          console.log(`  ${chalk.bold.red('Errors(s): ')}`);
+          logValidationReport(validationErrors);
+          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+          logValidationReport(validationWarnings);
+          console.log(`  Additional Information:`);
+          logValidationReport(validationInfos);
+          console.log(`** throws error and exits **`);
         }
+        console.log('----------------------');
     });
   })
   .parse(process.argv);
@@ -86,15 +87,15 @@ function getNestedObj (obj, item, result) {
   return result;
 }
 
-function logValidationReport (obj, color) {
+function logValidationReport (obj) {
   if (obj.length > 0) {
     for (let i = 0; i < obj.length; i++) {
       let jsonObj = JSON.parse(obj[i]);
-      console.log(`${chalk[color](jsonObj.title + ': ')}` + jsonObj['detail'] + ' (link: ' + jsonObj['link'] + ')');
+      console.log('  - ' + jsonObj.title + ': ' + jsonObj['detail'] + ' (link: ' + jsonObj['link'] + ')');
     }
   } else {
     // TODO: get language
-    console.log('N/A');
+    console.log('  N/A');
   }
 }
 
