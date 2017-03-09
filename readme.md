@@ -1,7 +1,16 @@
 # Microsoft Office Manifest Validator
 
-## How to use
+## How to install
+```bash
+npm install manifest-validator@0.0.1-beta.1
+```
 
+## How to run
+```bash
+$ validate-office-addin <your_manifest.xml>
+```
+
+## How to develop
 1. Open bash terminal or shell
 2. Navigate to the folder you want to install this tool
 3. Run the following commands:
@@ -18,5 +27,4 @@ $ npm start
 
 ```bash
 $ npm link
-$ validate-office-addin <your_manifest.xml>
 ```
