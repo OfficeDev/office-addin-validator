@@ -125,7 +125,6 @@ function logValidationReport (obj) {
       console.log('  - ' + jsonObj.title + ': ' + jsonObj['detail'] + ' (link: ' + jsonObj['link'] + ')');
     }
   } else {
-    // TODO: get language
     console.log('  N/A');
   }
 }
@@ -136,7 +135,6 @@ function logSupportedProduct (obj) {
       console.log('  - ' + obj[i].title + ', Version: ' + obj[i].version);
     }
   } else {
-    // TODO; get language
     console.log('N/A');
   }
 }

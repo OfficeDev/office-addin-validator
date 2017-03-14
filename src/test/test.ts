@@ -15,10 +15,13 @@ let options = {
 describe('Test Valid Manifest Files', () => {
   describe('Excel', () => {
     let result = '';
-    before((done) => {
+    beforeEach((done) => {
       let manifest = './manifest-to-test/valid_excel.xml';
-      callOmexService(manifest, options).then((response) => {
+      callOmexService(manifest, options)
+      .then((response) => {
         result = response.statusCode;
+        done();
+      }).catch((err) => {
         done();
       });
     });
