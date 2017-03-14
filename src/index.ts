@@ -25,7 +25,7 @@ commander
   .action((manifest) => {
     let language = commander.opts().language;
     options.uri = baseUri + language;
-    
+
     callOmexService(manifest, options, (formattedBody) => {
       let validationReport = formattedBody.checkReport.validationReport;
       let validationResult = validationReport.result;
@@ -36,7 +36,7 @@ commander
       getNestedObj(validationReport, 'errors', validationErrors);
       getNestedObj(validationReport, 'warnings', validationWarnings);
       getNestedObj(validationReport, 'infos', validationInfos);
-        
+
       console.log('----------------------');
       if (validationResult === 'Passed') {
         // supported products only exist when manifest is valid
@@ -51,7 +51,7 @@ commander
         logSupportedProduct(supportedProducts);
       } else {
         console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
-        console.log(`  ${chalk.bold.red('Errors(s): ')}`);
+        console.log(`  ${chalk.bold.red('Error(s): ')}`);
         logValidationReport(validationErrors);
         console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
         logValidationReport(validationWarnings);
@@ -68,9 +68,29 @@ function callOmexService (file, options, callback) {
   let formattedBody = {};
   fs.createReadStream(file)
     .pipe(request(options, (err, res, body) => {
-      formattedBody = JSON.parse(body.trim());
-
-      return callback(formattedBody);
+      if(!err && res.statusCode === 200) {
+        formattedBody = JSON.parse(body.trim());
+        return callback(formattedBody);
+      } else {
+        console.log('----------------------');
+        console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
+        console.log(`  ${chalk.bold.red('Error(s): ')}`);
+        switch (res.statusCode) {
+          case 400:
+            console.log('  Request body does not contain a valid XML document, and/or is too large (capped at 256kb).');
+            break;
+          case 415:
+            console.log('  Content-Type is not set to application/xml.');
+            break;
+          case 500:
+            console.log('  Unexpected error.');
+            break;
+          case 503:
+            console.log('  Service unavailable; API processing has been disabled via BRS.');
+            break;
+        }
+        console.log('----------------------');
+      }
     }));
 }
 
