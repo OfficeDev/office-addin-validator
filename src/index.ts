@@ -10,9 +10,9 @@ import * as fs from 'fs';
 import * as request from 'request';
 import * as chalk from 'chalk';
 
-
+let baseUri = 'https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck?lang=';
 let options = {
-  uri: 'https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck?lang=zh-CH',
+  uri: baseUri,
   method: 'POST',
   headers: {
     'Content-Type': 'application/xml'
@@ -21,42 +21,45 @@ let options = {
 
 commander
   .arguments('<manifest>')
-  .option('-l, --language [optional]', 'localization language')
+  .option('-l, --language [type]', 'localization language', 'en-US')
   .action((manifest) => {
+    let language = commander.opts().language;
+    options.uri = baseUri + language;
+    
     callOmexService(manifest, options, (formattedBody) => {
-        let validationReport = formattedBody.checkReport.validationReport;
-        let validationResult = validationReport.result;
-        let validationErrors = [];
-        let validationWarnings = [];
-        let validationInfos = [];
+      let validationReport = formattedBody.checkReport.validationReport;
+      let validationResult = validationReport.result;
+      let validationErrors = [];
+      let validationWarnings = [];
+      let validationInfos = [];
 
-        getNestedObj(validationReport, 'errors', validationErrors);
-        getNestedObj(validationReport, 'warnings', validationWarnings);
-        getNestedObj(validationReport, 'infos', validationInfos);
+      getNestedObj(validationReport, 'errors', validationErrors);
+      getNestedObj(validationReport, 'warnings', validationWarnings);
+      getNestedObj(validationReport, 'infos', validationInfos);
+        
+      console.log('----------------------');
+      if (validationResult === 'Passed') {
+        // supported products only exist when manifest is valid
+        let supportedProducts = formattedBody.checkReport.details.supportedProducts;
 
-        console.log('----------------------');
-        if (validationResult === 'Passed') {
-          // supported products only exist when manifest is valid
-          let supportedProducts = formattedBody.checkReport.details.supportedProducts;
-
-          console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
-          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
-          logValidationReport(validationWarnings);
-          console.log(`  Additional Information:`);
-          logValidationReport(validationInfos);
-          console.log(`With this manifest, the store will test your add-in against the following platforms:`);
-          logSupportedProduct(supportedProducts);
-        } else {
-          console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
-          console.log(`  ${chalk.bold.red('Errors(s): ')}`);
-          logValidationReport(validationErrors);
-          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
-          logValidationReport(validationWarnings);
-          console.log(`  Additional Information:`);
-          logValidationReport(validationInfos);
-          console.log(`** throws error and exits **`);
-        }
-        console.log('----------------------');
+        console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
+        console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+        logValidationReport(validationWarnings);
+        console.log(`  Additional Information:`);
+        logValidationReport(validationInfos);
+        console.log(`With this manifest, the store will test your add-in against the following platforms:`);
+        logSupportedProduct(supportedProducts);
+      } else {
+        console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
+        console.log(`  ${chalk.bold.red('Errors(s): ')}`);
+        logValidationReport(validationErrors);
+        console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+        logValidationReport(validationWarnings);
+        console.log(`  Additional Information:`);
+        logValidationReport(validationInfos);
+        console.log(`** throws error and exits **`);
+      }
+      console.log('----------------------');
     });
   })
   .parse(process.argv);
