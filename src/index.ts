@@ -68,12 +68,13 @@ function callOmexService (file, options, callback) {
   let formattedBody = {};
   fs.createReadStream(file)
     .pipe(request(options, (err, res, body) => {
-      if(!err && res.statusCode === 200) {
+      if (!err && res.statusCode === 200) {
         formattedBody = JSON.parse(body.trim());
         return callback(formattedBody);
       } else {
         console.log('----------------------');
         console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
+        console.log('  Error Code: ' + res.statusCode);
         console.log(`  ${chalk.bold.red('Error(s): ')}`);
         switch (res.statusCode) {
           case 400:
