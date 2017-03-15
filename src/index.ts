@@ -65,27 +65,29 @@ commander
         }
         console.log('----------------------');
       } else {
-        logError(response);
+        console.log(response.statusCode);
+        // throw response;
       }
     }).catch((err) => {
-      console.log('Other Errors: ' + err);
+      let statusCode = err['statusCode'];
+      logError(statusCode);
     });
   })
   .parse(process.argv);
 
-export function callOmexService (file, options) {
+function callOmexService (file, options) {
   let fileStream = fs.createReadStream(file);
   return fileStream.pipe(rp(options))
     .then((response) => { return response; })
-    .catch((err) => { return err; });
+    .catch((err) => { throw err; });
 }
 
-function logError (res) {
+function logError (statusCode) {
   console.log('----------------------');
   console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
-  console.log('  Error Code: ' + res.statusCode);
+  console.log('  Error Code: ' + statusCode);
   console.log(`  ${chalk.bold.red('Error(s): ')}`);
-  switch (res.statusCode) {
+  switch (statusCode) {
     case 400:
       console.log('  Request body does not contain a valid XML document, and/or is too large (capped at 256kb).');
       break;
