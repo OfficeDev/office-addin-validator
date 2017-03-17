@@ -23,9 +23,11 @@ let options = {
 
 commander
   .arguments('<manifest>')
-  .option('-l, --language [type]', 'localization language', 'en-US')
+  .option('-l, --language', 'localization language', 'en-US')
+  .option('-t, --type', 'Office Add-in or SharePoint Add-in', '')
   .action((manifest) => {
     let language = commander.language;
+    let type = commander.type;
     options.uri = baseUri + language;
 
     callOmexService(manifest, options).then((response) => {
@@ -47,26 +49,19 @@ commander
           let supportedProducts = formattedBody.checkReport.details.supportedProducts;
 
           console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
-          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
-          logValidationReport(validationWarnings);
-          console.log(`  Additional Information:`);
-          logValidationReport(validationInfos);
-          console.log(`With this manifest, the store will test your add-in against the following platforms:`);
+          logValidationReport(validationWarnings, 'warning');
+          logValidationReport(validationInfos, 'info');
           logSupportedProduct(supportedProducts);
         } else {
           console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
-          console.log(`  ${chalk.bold.red('Error(s): ')}`);
-          logValidationReport(validationErrors);
-          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
-          logValidationReport(validationWarnings);
-          console.log(`  Additional Information:`);
-          logValidationReport(validationInfos);
+          logValidationReport(validationErrors, 'error');
+          logValidationReport(validationWarnings, 'warning');
+          logValidationReport(validationInfos, 'info');
           console.log(`** throws error and exits **`);
         }
         console.log('----------------------');
       } else {
-        console.log(response.statusCode);
-        // throw response;
+        console.log('Unexpected Error');
       }
     }).catch((err) => {
       let statusCode = err['statusCode'];
@@ -120,23 +115,31 @@ function getNestedObj (obj, item, result) {
   return result;
 }
 
-function logValidationReport (obj) {
+function logValidationReport (obj, name) {
   if (obj.length > 0) {
+    switch (name) {
+        case 'error':
+          console.log(`  ${chalk.bold.red('Error(s): ')}`);
+          break;
+        case 'warning':
+          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+          break;
+        case 'info':
+          console.log(`  Additional Information:`);
+          break;
+      }
     for (let i = 0; i < obj.length; i++) {
       let jsonObj = JSON.parse(obj[i]);
       console.log('  - ' + jsonObj.title + ': ' + jsonObj['detail'] + ' (link: ' + jsonObj['link'] + ')');
     }
-  } else {
-    console.log('  N/A');
   }
 }
 
 function logSupportedProduct (obj) {
   if (obj.length > 0) {
+    console.log(`With this manifest, the store will test your add-in against the following platforms:`);
     for (let i = 0; i < obj.length; i++) {
       console.log('  - ' + obj[i].title + ', Version: ' + obj[i].version);
     }
-  } else {
-    console.log('N/A');
   }
 }

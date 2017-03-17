@@ -10,6 +10,7 @@
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
     "test": "mocha -r ts-node/register app/test/**.js --timeout 10000",
+    "build": "rimraf app && concurrently \"npm run tsc\"",
     "start": "rimraf app && concurrently \"npm run tsc-watch\""
   },
   "engines": {
