@@ -1,6 +1,6 @@
 {
   "name": "manifest-validator",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "description": "",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "tsc-watch": "tsc -p tsconfig.json -w",
-    "test": "mocha -r ts-node/register app/test/**.js --timeout 10000",
+    "test": "mocha -r ts-node/register app/test/**.js --timeout 10000 -R spec",
     "build": "rimraf app && concurrently \"npm run tsc\"",
     "start": "rimraf app && concurrently \"npm run tsc-watch\""
   },
@@ -41,6 +41,7 @@
     "applicationinsights": "^0.17.1",
     "chalk": "^1.1.3",
     "commander": "^2.9.0",
+    "node-status": "^1.0.0",
     "request": "^2.79.0",
     "request-promise": "^4.1.1"
   },

@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as request from 'request';
 import * as rp from 'request-promise';
 import * as chalk from 'chalk';
+import * as status from 'node-status';
 
 let baseUri = 'https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck?lang=';
 let options = {
@@ -24,13 +25,16 @@ let options = {
 commander
   .arguments('<manifest>')
   .option('-l, --language', 'localization language', 'en-US')
-  .option('-t, --type', 'Office Add-in or SharePoint Add-in', '')
-  .action((manifest) => {
-    let language = commander.language;
-    let type = commander.type;
-    options.uri = baseUri + language;
+  .action(async (manifest) => {
+    status.start({
+      pattern: '    {uptime.green} {spinner.dots.green} Calling validation service...'
+    });
 
-    callOmexService(manifest, options).then((response) => {
+    // set localization parameter
+    let language = commander.language;
+    options.uri = baseUri + language;
+    try {
+      let response = await callOmexService(manifest, options);
       if (response.statusCode === 200) {
         let formattedBody = JSON.parse(response.body.trim());
         let validationReport = formattedBody.checkReport.validationReport;
@@ -47,7 +51,6 @@ commander
         if (validationResult === 'Passed') {
           // supported products only exist when manifest is valid
           let supportedProducts = formattedBody.checkReport.details.supportedProducts;
-
           console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
           logValidationReport(validationWarnings, 'warning');
           logValidationReport(validationInfos, 'info');
@@ -57,27 +60,28 @@ commander
           logValidationReport(validationErrors, 'error');
           logValidationReport(validationWarnings, 'warning');
           logValidationReport(validationInfos, 'info');
-          console.log(`** throws error and exits **`);
         }
         console.log('----------------------');
       } else {
         console.log('Unexpected Error');
       }
-    }).catch((err) => {
+    }
+    catch (err) {
       let statusCode = err['statusCode'];
       logError(statusCode);
-    });
+      process.exitCode = 1;
+    }
+    finally { status.stop(); }
   })
   .parse(process.argv);
 
-function callOmexService (file, options) {
+async function callOmexService(file, options) {
   let fileStream = fs.createReadStream(file);
-  return fileStream.pipe(rp(options))
-    .then((response) => { return response; })
-    .catch((err) => { throw err; });
+  let response = await fileStream.pipe(rp(options));
+  return response;
 }
 
-function logError (statusCode) {
+function logError(statusCode) {
   console.log('----------------------');
   console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
   console.log('  Error Code: ' + statusCode);
@@ -99,7 +103,7 @@ function logError (statusCode) {
   console.log('----------------------');
 }
 
-function getNestedObj (obj, item, result) {
+function getNestedObj(obj, item, result) {
   for (let i = 0; i < obj[item].length; i++) {
     let itemTitle = obj[item][i].title;
     let itemDetail = obj[item][i].detail;
@@ -115,27 +119,27 @@ function getNestedObj (obj, item, result) {
   return result;
 }
 
-function logValidationReport (obj, name) {
+function logValidationReport(obj, name) {
   if (obj.length > 0) {
     switch (name) {
-        case 'error':
-          console.log(`  ${chalk.bold.red('Error(s): ')}`);
-          break;
-        case 'warning':
-          console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
-          break;
-        case 'info':
-          console.log(`  Additional Information:`);
-          break;
-      }
+      case 'error':
+        console.log(`  ${chalk.bold.red('Error(s): ')}`);
+        break;
+      case 'warning':
+        console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+        break;
+      case 'info':
+        console.log(`  Additional Information:`);
+        break;
+    }
     for (let i = 0; i < obj.length; i++) {
       let jsonObj = JSON.parse(obj[i]);
-      console.log('  - ' + jsonObj.title + ': ' + jsonObj['detail'] + ' (link: ' + jsonObj['link'] + ')');
+      console.log('  - ' + jsonObj.title + ': ' + jsonObj.detail + ' (link: ' + jsonObj.link + ')');
     }
   }
 }
 
-function logSupportedProduct (obj) {
+function logSupportedProduct(obj) {
   if (obj.length > 0) {
     console.log(`With this manifest, the store will test your add-in against the following platforms:`);
     for (let i = 0; i < obj.length; i++) {
