@@ -143,9 +143,10 @@ function logValidationReport(obj, name) {
 
 function logSupportedProduct(obj) {
   if (obj.length > 0) {
-    console.log(`With this manifest, the store will test your add-in against the following platforms:`);
+    console.log(`With this manifest, your add-in should work against the following platforms:`);
     for (let i = 0; i < obj.length; i++) {
       console.log('  - ' + obj[i].title + ', Version: ' + obj[i].version);
     }
+    console.log(`We recommend you test your add-in against these platforms before submitting to the store.`);
   }
 }

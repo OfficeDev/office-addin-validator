@@ -1,8 +1,8 @@
-# Microsoft Office Manifest Validator
+# Microsoft Office Add-in Manifest Validator
 
 ## How to install
 ```bash
-npm install -g manifest-validator@0.0.1-beta.3
+npm install -g office-addin-validator@0.0.1-beta.1
 ```
 
 ## How to run
