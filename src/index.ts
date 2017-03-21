@@ -26,44 +26,54 @@ commander
   .arguments('<manifest>')
   .option('-l, --language', 'localization language', 'en-US')
   .action(async (manifest) => {
-    // progress bar start
-    status.start({
-      pattern: '    {uptime.green} {spinner.dots.green} Calling validation service...'
-    });
     // set localization parameter
     let language = commander.language;
     options.uri = baseUri + language;
+
     try {
-      let response = await callOmexService(manifest, options);
-      if (response.statusCode === 200) {
-        let formattedBody = JSON.parse(response.body.trim());
-        let validationReport = formattedBody.checkReport.validationReport;
-        let validationResult = validationReport.result;
-        let validationErrors = [];
-        let validationWarnings = [];
-        let validationInfos = [];
+      if (fs.existsSync(manifest)) {
+        // progress bar start
+        status.start({
+          pattern: '    {uptime.green} {spinner.dots.green} Calling validation service...'
+        });
+        let response = await callOmexService(manifest, options);
+        if (response.statusCode === 200) {
+          let formattedBody = JSON.parse(response.body.trim());
+          let validationReport = formattedBody.checkReport.validationReport;
+          let validationResult = validationReport.result;
+          let validationErrors = [];
+          let validationWarnings = [];
+          let validationInfos = [];
 
-        getNestedObj(validationReport.errors, validationErrors);
-        getNestedObj(validationReport.warnings, validationWarnings);
-        getNestedObj(validationReport.infos, validationInfos);
+          getNestedObj(validationReport.errors, validationErrors);
+          getNestedObj(validationReport.warnings, validationWarnings);
+          getNestedObj(validationReport.infos, validationInfos);
 
-        console.log('-------------------------------------');
-        if (validationResult === 'Passed') {
-          // supported products only exist when manifest is valid
-          let supportedProducts = formattedBody.checkReport.details.supportedProducts;
-          console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
-          logValidationReport(validationWarnings, 'warning');
-          logValidationReport(validationInfos, 'info');
-          logSupportedProduct(supportedProducts);
+          console.log('-------------------------------------');
+          switch (validationResult) {
+            case 'Passed':
+              // supported products only exist when manifest is valid
+              let supportedProducts = formattedBody.checkReport.details.supportedProducts;
+              console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
+              logValidationReport(validationWarnings, 'warning');
+              logValidationReport(validationInfos, 'info');
+              logSupportedProduct(supportedProducts);
+              break;
+            case 'Failed':
+              console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
+              logValidationReport(validationErrors, 'error');
+              logValidationReport(validationWarnings, 'warning');
+              logValidationReport(validationInfos, 'info');
+              break;
+          }
+          console.log('-------------------------------------');
         } else {
-          console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
-          logValidationReport(validationErrors, 'error');
-          logValidationReport(validationWarnings, 'warning');
-          logValidationReport(validationInfos, 'info');
+          console.log('Unexpected program Error.');
         }
-        console.log('-------------------------------------');
       } else {
-        console.log('Unexpected Error');
+        console.log('Error: Please provide a valid local manifest file path.');
+        // exit node process when file does not exit
+        process.exitCode = 1;
       }
     } catch (err) {
       let statusCode = err['statusCode'];
@@ -74,8 +84,7 @@ commander
       // stop progress bar
       status.stop();
     }
-  })
-  .parse(process.argv);
+  }).parse(process.argv);
 
 async function callOmexService(file, options) {
   let fileStream = fs.createReadStream(file);
@@ -106,7 +115,7 @@ function logError(statusCode) {
 }
 
 function getNestedObj(array, result) {
-  for (let i of array ) {
+  for (let i of array) {
     let itemTitle = i.title;
     let itemDetail = i.detail;
     let itemLink = i.link;

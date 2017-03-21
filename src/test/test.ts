@@ -3,7 +3,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as request from 'request';
 import * as rp from 'request-promise';
-//import { callOmexService } from '../index';
 
 chai.use(chaiAsPromised);
 chai.should();
