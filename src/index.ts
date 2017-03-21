@@ -26,10 +26,10 @@ commander
   .arguments('<manifest>')
   .option('-l, --language', 'localization language', 'en-US')
   .action(async (manifest) => {
+    // progress bar start
     status.start({
       pattern: '    {uptime.green} {spinner.dots.green} Calling validation service...'
     });
-
     // set localization parameter
     let language = commander.language;
     options.uri = baseUri + language;
@@ -69,8 +69,10 @@ commander
     catch (err) {
       let statusCode = err['statusCode'];
       logError(statusCode);
+      // exit node process when error is thrown
       process.exitCode = 1;
     }
+    // stop progress bar
     finally { status.stop(); }
   })
   .parse(process.argv);

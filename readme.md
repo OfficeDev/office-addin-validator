@@ -2,7 +2,7 @@
 
 ## How to install
 ```bash
-npm install -g manifest-validator@0.0.1-beta.2
+npm install -g manifest-validator@0.0.1-beta.3
 ```
 
 ## How to run
