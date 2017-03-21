@@ -43,11 +43,11 @@ commander
         let validationWarnings = [];
         let validationInfos = [];
 
-        getNestedObj(validationReport, 'errors', validationErrors);
-        getNestedObj(validationReport, 'warnings', validationWarnings);
-        getNestedObj(validationReport, 'infos', validationInfos);
+        getNestedObj(validationReport.errors, validationErrors);
+        getNestedObj(validationReport.warnings, validationWarnings);
+        getNestedObj(validationReport.infos, validationInfos);
 
-        console.log('----------------------');
+        console.log('-------------------------------------');
         if (validationResult === 'Passed') {
           // supported products only exist when manifest is valid
           let supportedProducts = formattedBody.checkReport.details.supportedProducts;
@@ -61,19 +61,19 @@ commander
           logValidationReport(validationWarnings, 'warning');
           logValidationReport(validationInfos, 'info');
         }
-        console.log('----------------------');
+        console.log('-------------------------------------');
       } else {
         console.log('Unexpected Error');
       }
-    }
-    catch (err) {
+    } catch (err) {
       let statusCode = err['statusCode'];
       logError(statusCode);
       // exit node process when error is thrown
       process.exitCode = 1;
+    } finally {
+      // stop progress bar
+      status.stop();
     }
-    // stop progress bar
-    finally { status.stop(); }
   })
   .parse(process.argv);
 
@@ -84,7 +84,7 @@ async function callOmexService(file, options) {
 }
 
 function logError(statusCode) {
-  console.log('----------------------');
+  console.log('-------------------------------------');
   console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
   console.log('  Error Code: ' + statusCode);
   console.log(`  ${chalk.bold.red('Error(s): ')}`);
@@ -102,14 +102,14 @@ function logError(statusCode) {
       console.log('  Service unavailable; API processing has been disabled via BRS.');
       break;
   }
-  console.log('----------------------');
+  console.log('-------------------------------------');
 }
 
-function getNestedObj(obj, item, result) {
-  for (let i = 0; i < obj[item].length; i++) {
-    let itemTitle = obj[item][i].title;
-    let itemDetail = obj[item][i].detail;
-    let itemLink = obj[item][i].link;
+function getNestedObj(array, result) {
+  for (let i of array ) {
+    let itemTitle = i.title;
+    let itemDetail = i.detail;
+    let itemLink = i.link;
     let itemCollection = {
       'title': itemTitle,
       'detail': itemDetail,
@@ -117,8 +117,6 @@ function getNestedObj(obj, item, result) {
     };
     result.push(JSON.stringify(itemCollection));
   }
-
-  return result;
 }
 
 function logValidationReport(obj, name) {
@@ -134,8 +132,8 @@ function logValidationReport(obj, name) {
         console.log(`  Additional Information:`);
         break;
     }
-    for (let i = 0; i < obj.length; i++) {
-      let jsonObj = JSON.parse(obj[i]);
+    for (let i of obj) {
+      let jsonObj = JSON.parse(i);
       console.log('  - ' + jsonObj.title + ': ' + jsonObj.detail + ' (link: ' + jsonObj.link + ')');
     }
   }
@@ -144,8 +142,8 @@ function logValidationReport(obj, name) {
 function logSupportedProduct(obj) {
   if (obj.length > 0) {
     console.log(`With this manifest, your add-in should work against the following platforms:`);
-    for (let i = 0; i < obj.length; i++) {
-      console.log('  - ' + obj[i].title + ', Version: ' + obj[i].version);
+    for (let i of obj) {
+      console.log('  - ' + i.title + ', Version: ' + i.version);
     }
     console.log(`We recommend you test your add-in against these platforms before submitting to the store.`);
   }
