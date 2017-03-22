@@ -8,18 +8,16 @@ chai.use(chaiAsPromised);
 chai.should();
 let expect = chai.expect;
 
-function getStatusCode(file, options) {
+async function getStatusCode(file, options) {
   let fileStream = fs.createReadStream(file);
-  return fileStream.pipe(rp(options))
-    .then((response) => { return response.statusCode; })
-    .catch((err) => { return err.statusCode; });
+  let response = await fileStream.pipe(rp(options));
+  return response.statusCode;
 }
 
-function getServiceResponse(file, options) {
+async function getServiceResponse(file, options) {
   let fileStream = fs.createReadStream(file);
-  return fileStream.pipe(rp(options))
-    .then((response) => { return response; })
-    .catch((err) => { throw err; });
+  let response = await fileStream.pipe(rp(options));
+  return response;
 }
 
 describe('Test service scenarios', () => {
@@ -43,16 +41,24 @@ describe('Test service scenarios', () => {
       return getStatusCode(manifest, options).should.eventually.equal(200);
     });
   });
-  describe('Invalid - 400, request body is not valid xml', () => {
-    it('should return validation failed with code 400', () => {
-      let manifest = './manifest-to-test/invalid_400.xml';
-      return getStatusCode(manifest, options).should.eventually.throw;
+  describe('Valid - 200, Response contains property \'supportedProducts\'', () => {
+    before(async () => {
+      let manifest = './manifest-to-test/valid_onenote.xml';
+      try {
+        let response = await getServiceResponse(manifest, options);
+        let formattedBody = JSON.parse(response.body.trim());
+        supportedProducts = formattedBody.checkReport.details.supportedProducts;
+      }
+      catch (err) { }
     });
-  });
-  describe('Invalid - 400, can not find file', () => {
-    it('should return validation failed with code 400', () => {
-      let manifest = '';
-      return getStatusCode(manifest, options).should.eventually.throw;
+    it('should have \'supportedProducts\' and \'supportedProducts\' is an array', () => {
+      expect(supportedProducts).to.exist.and.is.an('array');
+    });
+    it('should have \'title\' in \'supportedProducts\'', () => {
+      expect(supportedProducts).to.have.deep.property('[0].title');
+    });
+    it('should have \'version\' in \'supportedProducts\'', () => {
+      expect(supportedProducts).to.have.deep.property('[0].version');
     });
   });
   // Make sure service return consisten format
@@ -88,24 +94,16 @@ describe('Test service scenarios', () => {
       expect(errors).to.have.deep.property('[0].link');
     });
   });
-  describe('Valid - 200, Response contains property \'supportedProducts\'', () => {
-    before(async () => {
-      let manifest = './manifest-to-test/valid_onenote.xml';
-      try {
-        let response = await getServiceResponse(manifest, options);
-        let formattedBody = JSON.parse(response.body.trim());
-        supportedProducts = formattedBody.checkReport.details.supportedProducts;
-      }
-      catch (err) { }
+  describe('Invalid - 400, request body is not valid xml', () => {
+    it('should return validation failed with code 400', () => {
+      let manifest = './manifest-to-test/invalid_400.xml';
+      return getStatusCode(manifest, options).should.eventually.throw;
     });
-    it('should have \'supportedProducts\' and \'supportedProducts\' is an array', () => {
-      expect(supportedProducts).to.exist.and.is.an('array');
-    });
-    it('should have \'title\' in \'supportedProducts\'', () => {
-      expect(supportedProducts).to.have.deep.property('[0].title');
-    });
-    it('should have \'version\' in \'supportedProducts\'', () => {
-      expect(supportedProducts).to.have.deep.property('[0].version');
+  });
+  describe('Invalid, can not find file', () => {
+    it('should return validation failed with code 400', () => {
+      let manifest = '';
+      return getStatusCode(manifest, options).should.eventually.throw;
     });
   });
 });
