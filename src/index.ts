@@ -23,7 +23,7 @@ let options = {
   },
   resolveWithFullResponse: true
 };
-// let console = status.console();
+
 commander
   .arguments('<manifest>')
   .action(async (manifest) => {
