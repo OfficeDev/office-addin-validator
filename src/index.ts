@@ -23,15 +23,10 @@ let options = {
   },
   resolveWithFullResponse: true
 };
-
+// let console = status.console();
 commander
   .arguments('<manifest>')
-  .option('-l, --language', 'localization language', 'en-US')
   .action(async (manifest) => {
-    // set localization parameter
-    let language = commander.language;
-    options.uri = baseUri + '?lang=' + language;
-
     try {
       if (fs.existsSync(manifest)) {
         // progress bar start
