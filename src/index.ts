@@ -11,8 +11,10 @@ import * as request from 'request';
 import * as rp from 'request-promise';
 import * as chalk from 'chalk';
 import * as status from 'node-status';
+import * as appInsights from 'applicationinsights';
 
-let baseUri = 'https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck?lang=';
+let insight = appInsights.getClient('78cc7757-c7a2-4382-b801-bce73cf33d7a');
+let baseUri = 'https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck';
 let options = {
   uri: baseUri,
   method: 'POST',
@@ -28,7 +30,7 @@ commander
   .action(async (manifest) => {
     // set localization parameter
     let language = commander.language;
-    options.uri = baseUri + language;
+    options.uri = baseUri + '?lang=' + language;
 
     try {
       if (fs.existsSync(manifest)) {
@@ -67,17 +69,21 @@ commander
               break;
           }
           console.log('-------------------------------------');
+          insight.trackEvent('Validation Results', { result: validationResult });
         } else {
-          console.log('Unexpected program Error.');
+          console.log('Unexpected program error.');
+          insight.trackException(new Error('Unexpected program error.'));
         }
       } else {
         console.log('Error: Please provide a valid local manifest file path.');
+        insight.trackException(new Error('Manifest file path is not valid.'));
         // exit node process when file does not exit
         process.exitCode = 1;
       }
     } catch (err) {
       let statusCode = err['statusCode'];
       logError(statusCode);
+      insight.trackException(new Error('Service Error. Error Code: ' + statusCode));
       // exit node process when error is thrown
       process.exitCode = 1;
     } finally {
