@@ -38,13 +38,6 @@ commander
           let formattedBody = JSON.parse(response.body.trim());
           let validationReport = formattedBody.checkReport.validationReport;
           let validationResult = validationReport.result;
-          let validationErrors = [];
-          let validationWarnings = [];
-          let validationInfos = [];
-
-          getNestedObj(validationReport.errors, validationErrors);
-          getNestedObj(validationReport.warnings, validationWarnings);
-          getNestedObj(validationReport.infos, validationInfos);
 
           console.log('-------------------------------------');
           switch (validationResult) {
@@ -52,15 +45,15 @@ commander
               // supported products only exist when manifest is valid
               let supportedProducts = formattedBody.checkReport.details.supportedProducts;
               console.log(`${chalk.bold('Validation: ')}${chalk.bold.green('Passed')}`);
-              logValidationReport(validationWarnings, 'warning');
-              logValidationReport(validationInfos, 'info');
+              logValidationReport(validationReport.warnings, 'warning');
+              logValidationReport(validationReport.infos, 'info');
               logSupportedProduct(supportedProducts);
               break;
             case 'Failed':
               console.log(`${chalk.bold('Validation: ')}${chalk.bold.red('Failed')}`);
-              logValidationReport(validationErrors, 'error');
-              logValidationReport(validationWarnings, 'warning');
-              logValidationReport(validationInfos, 'info');
+              logValidationReport(validationReport.errors, 'error');
+              logValidationReport(validationReport.warnings, 'warning');
+              logValidationReport(validationReport.infos, 'info');
               break;
           }
           console.log('-------------------------------------');
@@ -115,20 +108,6 @@ function logError(statusCode) {
   console.log('-------------------------------------');
 }
 
-function getNestedObj(array, result) {
-  for (let i of array) {
-    let itemTitle = i.title;
-    let itemDetail = i.detail;
-    let itemLink = i.link;
-    let itemCollection = {
-      'title': itemTitle,
-      'detail': itemDetail,
-      'link': itemLink
-    };
-    result.push(JSON.stringify(itemCollection));
-  }
-}
-
 function logValidationReport(obj, name) {
   if (obj.length > 0) {
     switch (name) {
@@ -143,18 +122,27 @@ function logValidationReport(obj, name) {
         break;
     }
     for (let i of obj) {
-      let jsonObj = JSON.parse(i);
-      console.log('  - ' + jsonObj.title + ': ' + jsonObj.detail + ' (link: ' + jsonObj.link + ')');
+      console.log('  - ' + i.title + ': ' + i.detail + ' (link: ' + i.link + ')');
     }
   }
 }
 
 function logSupportedProduct(obj) {
   if (obj.length > 0) {
+    let product = [];
+    getProduct(obj, product);
+    let unique = [...new Set(product)];
     console.log(`With this manifest, your add-in should work against the following platforms:`);
-    for (let i of obj) {
-      console.log('  - ' + i.title + ', Version: ' + i.version);
+    for (let i of unique) {
+      console.log('  - ' + i);
     }
     console.log(`We recommend you test your add-in against these platforms before submitting to the store.`);
+  }
+}
+
+function getProduct(array, result) {
+  for (let i of array) {
+    let itemTitle = i.title;
+    result.push(itemTitle);
   }
 }
