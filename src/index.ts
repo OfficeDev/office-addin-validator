@@ -132,11 +132,11 @@ function logSupportedProduct(obj) {
     let product = [];
     getProduct(obj, product);
     let unique = [...new Set(product)];
-    console.log(`With this manifest, your add-in should work against the following platforms:`);
+    console.log(`These Office applications will accept your add-in manifest:`);
     for (let i of unique) {
       console.log('  - ' + i);
     }
-    console.log(`We recommend you test your add-in against these platforms before submitting to the store.`);
+    console.log(`Based on the features and requirement sets implemented by your add-in, use the Add-in Availability Page (https://dev.office.com/add-in-availability) to determine which platforms to test your add-in against.`);
   }
 }
 
