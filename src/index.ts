@@ -77,6 +77,7 @@ commander
     } finally {
       // stop progress bar
       status.stop();
+      process.exit();
     }
   }).parse(process.argv);
 
