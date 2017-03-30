@@ -23,11 +23,11 @@ If you are interested in contributing, read the [Contributing Guidelines](CONTRI
 
 Install `office-addin-validator` globally using [NPM](http://npmjs.org/):
 ```bash
-npm install -g office-addin-validator@0.0.1-beta.2
+npm install -g office-addin-validator
 ```
 
 ## Usage
 ```bash
-$ validate-office-addin <your_manifest.xml>
+$ validate-office-addin your_manifest.xml
 ```
 > **Note:** At this time, we only support validation on manifest files that lives on your local drive.
