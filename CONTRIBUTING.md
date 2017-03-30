@@ -143,3 +143,5 @@ Congratulations, you have successfully contributed to the project.
 ## More resources
 * To learn more about Markdown, see [Daring Fireball](http://daringfireball.net/).
 * To learn more about using Git and GitHub, check out the [GitHub Help section](http://help.github.com/).
+
+Copyright (c) 2017 Microsoft Corporation. All rights reserved.

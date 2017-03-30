@@ -63,3 +63,4 @@ node_modules/**
 app/**
 packages/**
 .vscode/**
+manifest-to-test/**
