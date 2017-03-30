@@ -39,7 +39,7 @@ commander
           let validationReport = formattedBody.checkReport.validationReport;
           let validationResult = validationReport.result;
 
-          console.log('\n-------------------------------------');
+          console.log('-------------------------------------');
           switch (validationResult) {
             case 'Passed':
               // supported products only exist when manifest is valid
