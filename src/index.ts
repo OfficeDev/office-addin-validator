@@ -31,7 +31,7 @@ commander
       if (fs.existsSync(manifest)) {
         // progress bar start
         status.start({
-          pattern: '    {uptime.green} {spinner.dots.green} Calling validation service...'
+          pattern: '  {uptime.green} {spinner.dots.green} Calling validation service...'
         });
         let response = await callOmexService(manifest, options);
         if (response.statusCode === 200) {
@@ -39,7 +39,7 @@ commander
           let validationReport = formattedBody.checkReport.validationReport;
           let validationResult = validationReport.result;
 
-          console.log('-------------------------------------');
+          console.log('\n-------------------------------------');
           switch (validationResult) {
             case 'Passed':
               // supported products only exist when manifest is valid
