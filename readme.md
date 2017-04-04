@@ -30,6 +30,7 @@ npm install -g office-addin-validator
 ```bash
 $ validate-office-addin your_manifest.xml
 ```
+![](src/docs/valid.gif)
 > **Note:** At this time, we only support validation on manifest files that lives on your local drive.
 
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.

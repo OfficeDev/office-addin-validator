@@ -31,7 +31,7 @@ commander
       if (fs.existsSync(manifest)) {
         // progress bar start
         status.start({
-          pattern: '  {uptime.green} {spinner.dots.green} Calling validation service...'
+          pattern: '  {uptime.green} {spinner.green} Calling validation service...'
         });
         let response = await callOmexService(manifest, options);
         if (response.statusCode === 200) {
