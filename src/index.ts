@@ -31,13 +31,14 @@ commander
       if (fs.existsSync(manifest)) {
         // progress bar start
         status.start({
-          pattern: '  {uptime.green} {spinner.dots.green} Calling validation service...'
+          pattern: '  {uptime.green} {spinner.green} Calling validation service...'
         });
         let response = await callOmexService(manifest, options);
         if (response.statusCode === 200) {
           let formattedBody = JSON.parse(response.body.trim());
           let validationReport = formattedBody.checkReport.validationReport;
           let validationResult = validationReport.result;
+          insight.trackEvent('Validation Results', { result: validationResult });
 
           console.log('-------------------------------------');
           switch (validationResult) {
@@ -57,27 +58,26 @@ commander
               break;
           }
           console.log('-------------------------------------');
-          insight.trackEvent('Validation Results', { result: validationResult });
         } else {
           console.log('Unexpected program error.');
+          process.exitCode = 1;
           insight.trackException(new Error('Unexpected program error.'));
         }
       } else {
         console.log('Error: Please provide a valid local manifest file path.');
         insight.trackException(new Error('Manifest file path is not valid.'));
-        // exit node process when file does not exit
+        // update node process exit code when file does not exit
         process.exitCode = 1;
       }
     } catch (err) {
       let statusCode = err['statusCode'];
       logError(statusCode);
       insight.trackException(new Error('Service Error. Error Code: ' + statusCode));
-      // exit node process when error is thrown
+      // update node process exit code when error is thrown
       process.exitCode = 1;
     } finally {
       // stop progress bar
       status.stop();
-      process.exit();
     }
   }).parse(process.argv);
 
@@ -133,11 +133,12 @@ function logSupportedProduct(obj) {
     let product = [];
     getProduct(obj, product);
     let unique = [...new Set(product)];
-    console.log(`These Office applications will accept your add-in manifest:`);
+    console.log(`Based on the requirements specified in your manifest, your add-in can run on the following platforms; your add-in will be tested on these platforms when you submit it to the Office Store:`);
     for (let i of unique) {
       console.log('  - ' + i);
     }
-    console.log(`Based on the features and requirement sets implemented by your add-in, use the Add-in Availability Page (https://dev.office.com/add-in-availability) to determine which platforms to test your add-in against.`);
+    console.log(`Important: This analysis is based on the requirements specified in your manifest and does not account for any runtime JavaScript calls within your add-in. For information about which API sets and features are supported on each platform, see Office Add-in host and platform availability. (https://dev.office.com/add-in-availability).\n`);
+    console.log(`*This does not include mobile apps. You can opt-in to support mobile apps when you submit your add-in.`);
   }
 }
 
