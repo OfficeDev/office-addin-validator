@@ -27,8 +27,9 @@ let options = {
 commander
   .arguments('<manifest>')
   .action(async (manifest) => {
-    try {
-      if (fs.existsSync(manifest)) {
+
+    if (fs.existsSync(manifest)) {
+      try {
         // progress bar start
         status.start({
           pattern: '  {uptime.green} {spinner.green} Calling validation service...'
@@ -58,26 +59,36 @@ commander
               break;
           }
           console.log('-------------------------------------');
-        } else {
-          console.log('Unexpected program error.');
-          process.exitCode = 1;
-          insight.trackException(new Error('Unexpected program error.'));
+          process.exitCode = 0;
         }
-      } else {
-        console.log('Error: Please provide a valid local manifest file path.');
-        insight.trackException(new Error('Manifest file path is not valid.'));
-        // update node process exit code when file does not exit
+      } catch (err) {
+        if (err.name === 'RequestError') {
+          console.log('-------------------------------------');
+          console.log('Error: Cannot reach service.');
+          console.log('-------------------------------------');
+        } else if (err.name === 'StatusCodeError') {
+          let statusCode = err.statusCode;
+          logError(statusCode);
+        } else {
+          console.log('-------------------------------------');
+          console.log('Error: Unexpected error.');
+          console.log('-------------------------------------');
+        }
+        insight.trackException(new Error('Service Error. Error Code: ' + err.name));
+        // update node process exit code when error is thrown
         process.exitCode = 1;
+      } finally {
+        // stop progress bar
+        status.stop();
+        process.exit();
       }
-    } catch (err) {
-      let statusCode = err['statusCode'];
-      logError(statusCode);
-      insight.trackException(new Error('Service Error. Error Code: ' + statusCode));
-      // update node process exit code when error is thrown
+    } else {
+      console.log('-------------------------------------');
+      console.log('Error: Please provide a valid local manifest file path.');
+      console.log('-------------------------------------');
+      insight.trackException(new Error('Manifest file path is not valid.'));
+      // update node process exit code when file does not exit
       process.exitCode = 1;
-    } finally {
-      // stop progress bar
-      status.stop();
     }
   }).parse(process.argv);
 

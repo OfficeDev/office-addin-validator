@@ -105,7 +105,7 @@ describe('Test service scenarios', () => {
     });
   });
   describe('Invalid, can not find file', () => {
-    it('should return validation failed with code 400', () => {
+    it('should return validation failed', () => {
       let manifest = '';
       return getStatusCode(manifest, options).should.eventually.throw;
     });
