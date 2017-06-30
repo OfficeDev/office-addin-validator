@@ -124,18 +124,58 @@ function logValidationReport(obj, name) {
   if (obj.length > 0) {
     switch (name) {
       case 'error':
-        console.log(`  ${chalk.bold.red('Error(s): ')}`);
+        logErrors(obj);
         break;
       case 'warning':
-        console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+        logWarnings(obj);
         break;
       case 'info':
-        console.log(`  Additional Information:`);
+        logInfos(obj);
         break;
     }
-    for (let i of obj) {
-      console.log('  - ' + i.title + ': ' + i.detail + ' (link: ' + i.link + ')');
-    }
+  }
+}
+
+// Provide detailed error information provided in the validationReport.errors object.
+function logErrors(errors) {
+  let n = 1;
+  for (let e of errors) {
+    console.log(`${chalk.bold.red('\nError #' + n + ': ')}`);
+    logDetails(e);
+    ++n;
+  }
+}
+
+// Provide detailed warning information provided in the validationReport.warnings object.
+function logWarnings(warnings) {  
+  let n = 1;
+  for (let w of warnings) {
+    console.log(`  ${chalk.bold.yellow('Warning  #' + n + ': ')}`);
+    logDetails(w);
+    ++n;
+  }
+}
+
+// Provide detailed additional information provided in the validationReport.infos object.
+function logInfos(infos) {
+  for (let i of infos) {
+    console.log(`  ${chalk.bold.blue('  Additional information: ')}`);
+    logDetails(i);
+  }
+}
+
+// Logs out the Code, Column, and/or Line value returned from the validation service.
+// param: obj - either an validationReport.errors[x], validationReport.warnings[x], or validationReport.infos[x] object.
+function logDetails(obj) {
+  console.log('' + obj.title + ': ' + obj.detail + ' (link: ' + obj.link + ')');
+  if (obj.code) {
+    console.log('  - Details: ' + obj.code);
+  }
+  if (obj.line) {
+    console.log('  - Line: ' + obj.line);
+  }
+  if (obj.column) {
+    console.log('  - Column: ' + obj.column);
   }
 }
 
