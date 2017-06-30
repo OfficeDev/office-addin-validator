@@ -124,18 +124,62 @@ function logValidationReport(obj, name) {
   if (obj.length > 0) {
     switch (name) {
       case 'error':
-        console.log(`  ${chalk.bold.red('Error(s): ')}`);
+        logErrors(obj);
         break;
       case 'warning':
-        console.log(`  ${chalk.bold.yellow('Warning(s): ')}`);
+        logWarnings(obj);
         break;
       case 'info':
-        console.log(`  Additional Information:`);
+        logInfos(obj);
         break;
     }
-    for (let i of obj) {
-      console.log('  - ' + i.title + ': ' + i.detail + ' (link: ' + i.link + ')');
+  }
+}
+
+// Provide detailed error information provided in the validationReport.errors object.
+function logErrors(errors) {
+  
+  let n = 1;
+  for (let e of errors) {
+    console.log(`  ${chalk.bold.red('Error #' + n + ': ')}`);
+    console.log('  - ' + e.title + ': ' + e.detail + ' (link: ' + e.link + ')');
+    if (e.code) {
+      console.log('  - Code: ' + e.code);
     }
+    if (e.column) {
+      console.log('  - Column: ' + e.column);
+    }
+    if (e.line) {
+      console.log('  - Line: ' + e.line);
+    }
+    ++n;
+  }
+}
+
+// Provide detailed warning information provided in the validationReport.warnings object.
+function logWarnings(warnings) {  
+  let n = 1;
+  for (let w of warnings) {
+    console.log(`  ${chalk.bold.red('Warning  #' + n + ': ')}`);
+    console.log('  - ' + w.title + ': ' + w.detail + ' (link: ' + w.link + ')');
+    if (w.code) {
+      console.log('  - Code: ' + w.code);
+    }
+    if (w.column) {
+      console.log('  - Column: ' + w.column);
+    }
+    if (w.line) {
+      console.log('  - Line: ' + w.line);
+    }
+    ++n;
+  }
+}
+
+// Provide detailed additional information provided in the validationReport.infos object.
+function logInfos(infos) {
+  for (let i of infos) {
+    console.log(`  ${chalk.bold.red('  Additional information: ')}`);
+    console.log('  - ' + i.title + ': ' + i.detail + ' (link: ' + i.link + ')');
   }
 }
 
