@@ -150,7 +150,7 @@ function logErrors(errors) {
 function logWarnings(warnings) {  
   let n = 1;
   for (let w of warnings) {
-    console.log(`  ${chalk.bold.red('Warning  #' + n + ': ')}`);
+    console.log(`  ${chalk.bold.yellow('Warning  #' + n + ': ')}`);
     logDetails(w);
     ++n;
   }
@@ -159,7 +159,7 @@ function logWarnings(warnings) {
 // Provide detailed additional information provided in the validationReport.infos object.
 function logInfos(infos) {
   for (let i of infos) {
-    console.log(`  ${chalk.bold.red('  Additional information: ')}`);
+    console.log(`  ${chalk.bold.blue('  Additional information: ')}`);
     logDetails(i);
   }
 }
@@ -169,13 +169,13 @@ function logInfos(infos) {
 function logDetails(obj) {
   console.log('  - ' + obj.title + ': ' + obj.detail + ' (link: ' + obj.link + ')');
   if (obj.code) {
-    console.log('  - Code: ' + obj.code);
-  }
-  if (obj.column) {
-    console.log('  - Column: ' + obj.column);
+    console.log('  - Details: ' + obj.code);
   }
   if (obj.line) {
     console.log('  - Line: ' + obj.line);
+  }
+  if (obj.column) {
+    console.log('  - Column: ' + obj.column);
   }
 }
 
