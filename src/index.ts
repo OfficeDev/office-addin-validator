@@ -138,20 +138,10 @@ function logValidationReport(obj, name) {
 
 // Provide detailed error information provided in the validationReport.errors object.
 function logErrors(errors) {
-  
   let n = 1;
   for (let e of errors) {
     console.log(`  ${chalk.bold.red('Error #' + n + ': ')}`);
-    console.log('  - ' + e.title + ': ' + e.detail + ' (link: ' + e.link + ')');
-    if (e.code) {
-      console.log('  - Code: ' + e.code);
-    }
-    if (e.column) {
-      console.log('  - Column: ' + e.column);
-    }
-    if (e.line) {
-      console.log('  - Line: ' + e.line);
-    }
+    logDetails(e);
     ++n;
   }
 }
@@ -161,16 +151,7 @@ function logWarnings(warnings) {
   let n = 1;
   for (let w of warnings) {
     console.log(`  ${chalk.bold.red('Warning  #' + n + ': ')}`);
-    console.log('  - ' + w.title + ': ' + w.detail + ' (link: ' + w.link + ')');
-    if (w.code) {
-      console.log('  - Code: ' + w.code);
-    }
-    if (w.column) {
-      console.log('  - Column: ' + w.column);
-    }
-    if (w.line) {
-      console.log('  - Line: ' + w.line);
-    }
+    logDetails(w);
     ++n;
   }
 }
@@ -179,7 +160,22 @@ function logWarnings(warnings) {
 function logInfos(infos) {
   for (let i of infos) {
     console.log(`  ${chalk.bold.red('  Additional information: ')}`);
-    console.log('  - ' + i.title + ': ' + i.detail + ' (link: ' + i.link + ')');
+    logDetails(i);
+  }
+}
+
+// Logs out the Code, Column, and/or Line value returned from the validation service.
+// param: obj - either an validationReport.errors[x], validationReport.warnings[x], or validationReport.infos[x] object.
+function logDetails(obj) {
+  console.log('  - ' + obj.title + ': ' + obj.detail + ' (link: ' + obj.link + ')');
+  if (obj.code) {
+    console.log('  - Code: ' + obj.code);
+  }
+  if (obj.column) {
+    console.log('  - Column: ' + obj.column);
+  }
+  if (obj.line) {
+    console.log('  - Line: ' + obj.line);
   }
 }
 
