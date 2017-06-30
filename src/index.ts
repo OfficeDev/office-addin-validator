@@ -140,7 +140,7 @@ function logValidationReport(obj, name) {
 function logErrors(errors) {
   let n = 1;
   for (let e of errors) {
-    console.log(`  ${chalk.bold.red('Error #' + n + ': ')}`);
+    console.log(`${chalk.bold.red('\nError #' + n + ': ')}`);
     logDetails(e);
     ++n;
   }
@@ -167,7 +167,7 @@ function logInfos(infos) {
 // Logs out the Code, Column, and/or Line value returned from the validation service.
 // param: obj - either an validationReport.errors[x], validationReport.warnings[x], or validationReport.infos[x] object.
 function logDetails(obj) {
-  console.log('  - ' + obj.title + ': ' + obj.detail + ' (link: ' + obj.link + ')');
+  console.log('' + obj.title + ': ' + obj.detail + ' (link: ' + obj.link + ')');
   if (obj.code) {
     console.log('  - Details: ' + obj.code);
   }
