@@ -65,7 +65,8 @@ describe('Test service scenarios', () => {
       expect(supportedProducts).to.have.deep.property('[0].version');
     });
   });
-  // Make sure service return consisten format
+  // Make sure service return consistent format.
+  // TODO: This test doesn't appear to be correct. This file only contains 2 errors. 
   describe('Invalid - 200, Response contains property \'Errors\' \'Warnings\' \'Infos\'', () => {
     before(async () => {
       let manifest = './manifest-to-test/invalid_200.xml';
