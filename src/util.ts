@@ -9,7 +9,7 @@ import * as rp from 'request-promise';
 import * as chalk from 'chalk';
 import * as appInsights from 'applicationinsights';
 
-let insight = appInsights.getClient('78cc7757-c7a2-4382-b801-bce73cf33d7a');
+export const insight = appInsights.getClient('78cc7757-c7a2-4382-b801-bce73cf33d7a');
 let baseUri = 'https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck';
 let options = {
   uri: baseUri,
@@ -22,7 +22,7 @@ let options = {
 
 export async function validateManifest(manifest: string) : Promise<number> {
   try {
-    console.log('Calling validation service...');
+    console.log('Calling validation service. This might take a moment...');
     let response = await callOmexService(manifest, options);
     if (response.statusCode === 200) {
       let formattedBody = JSON.parse(response.body.trim());
