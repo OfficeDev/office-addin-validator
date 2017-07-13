@@ -7,14 +7,14 @@
 
 import * as commander from 'commander';
 import * as fs from 'fs';
-import * as util from './util'
+import * as util from './util';
 
 commander
   .arguments('<manifest>')
   .action(async (manifest) => {
 
     if (fs.existsSync(manifest)) {
-      process.exitCode = await util.validateManifest(manifest) == 'Error' ? 1 : 0;
+      process.exitCode = await util.validateManifest(manifest) === 'Error' ? 1 : 0;
       process.exit();
     } else {
       console.log('-------------------------------------');

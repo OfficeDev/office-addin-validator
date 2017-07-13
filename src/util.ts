@@ -26,7 +26,7 @@ export async function validateManifest(manifest: string) : Promise<string> {
       let formattedBody = JSON.parse(response.body.trim());
       let validationReport = formattedBody.checkReport.validationReport;
       let validationResult = validationReport.result;
-      
+
       console.log('-------------------------------------');
       switch (validationResult) {
         case 'Passed':
@@ -46,7 +46,7 @@ export async function validateManifest(manifest: string) : Promise<string> {
       }
       console.log('-------------------------------------');
       return validationResult;
-    } 
+    }
     else {
       logError(response.statusCode);
       return 'Error';
@@ -123,7 +123,7 @@ function logErrors(errors) {
 }
 
 // Provide detailed warning information provided in the validationReport.warnings object.
-function logWarnings(warnings) {  
+function logWarnings(warnings) {
   let n = 1;
   for (let w of warnings) {
     console.log(`  ${chalk.bold.yellow('Warning  #' + n + ': ')}`);
