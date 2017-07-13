@@ -7,9 +7,7 @@ import * as fs from 'fs';
 import * as request from 'request';
 import * as rp from 'request-promise';
 import * as chalk from 'chalk';
-import * as appInsights from 'applicationinsights';
 
-export const insight = appInsights.getClient('78cc7757-c7a2-4382-b801-bce73cf33d7a');
 let baseUri = 'https://verificationservice.osi.office.net/ova/addincheckingagent.svc/api/addincheck';
 let options = {
   uri: baseUri,
@@ -20,7 +18,7 @@ let options = {
   resolveWithFullResponse: true
 };
 
-export async function validateManifest(manifest: string) : Promise<number> {
+export async function validateManifest(manifest: string) : Promise<string> {
   try {
     console.log('Calling validation service. This might take a moment...');
     let response = await callOmexService(manifest, options);
@@ -28,8 +26,7 @@ export async function validateManifest(manifest: string) : Promise<number> {
       let formattedBody = JSON.parse(response.body.trim());
       let validationReport = formattedBody.checkReport.validationReport;
       let validationResult = validationReport.result;
-      insight.trackEvent('Validation Results', { result: validationResult });
-
+      
       console.log('-------------------------------------');
       switch (validationResult) {
         case 'Passed':
@@ -48,11 +45,11 @@ export async function validateManifest(manifest: string) : Promise<number> {
           break;
       }
       console.log('-------------------------------------');
-      return 0;
+      return validationResult;
     } 
     else {
       logError(response.statusCode);
-      return 1;
+      return 'Error';
     }
   } catch (err) {
     if (err.name === 'RequestError') {
@@ -67,8 +64,7 @@ export async function validateManifest(manifest: string) : Promise<number> {
       console.log('Error: Unexpected error.');
       console.log('-------------------------------------');
     }
-    insight.trackException(new Error('Service Error. Error Code: ' + err.name));
-    return 1;
+    return 'Error';
   }
 }
 

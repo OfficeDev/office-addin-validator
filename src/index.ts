@@ -7,7 +7,6 @@
 
 import * as commander from 'commander';
 import * as fs from 'fs';
-import * as appInsights from 'applicationinsights';
 import * as util from './util'
 
 commander
@@ -15,13 +14,12 @@ commander
   .action(async (manifest) => {
 
     if (fs.existsSync(manifest)) {
-      process.exitCode = await util.validateManifest(manifest);
+      process.exitCode = await util.validateManifest(manifest) == 'Error' ? 1 : 0;
       process.exit();
     } else {
       console.log('-------------------------------------');
       console.log('Error: Please provide a valid local manifest file path.');
       console.log('-------------------------------------');
-      util.insight.trackException(new Error('Manifest file path is not valid.'));
       // update node process exit code when file does not exit
       process.exitCode = 1;
       process.exit();
