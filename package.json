@@ -1,6 +1,6 @@
 {
   "name": "office-addin-validator",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Tool to help validate Microsoft Office Add-in manifest files.",
   "repository": {
     "type": "git",
