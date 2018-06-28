@@ -40,8 +40,8 @@
   "dependencies": {
     "chalk": "^1.1.3",
     "commander": "^2.9.0",
-    "request": "^2.81.0",
-    "request-promise": "^4.2.0"
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {
     "@types/applicationinsights": "^0.15.33",
