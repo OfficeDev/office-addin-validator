@@ -102,13 +102,13 @@ describe('Test service scenarios', () => {
   describe('Invalid - 400, request body is not valid xml', () => {
     it('should return validation failed with code 400', () => {
       let manifest = './manifest-to-test/invalid_400.xml';
-      return getStatusCode(manifest, options).should.eventually.throw;
+      return expect(getStatusCode(manifest, options)).to.be.rejected;
     });
   });
   describe('Invalid, can not find file', () => {
     it('should return validation failed', () => {
       let manifest = '';
-      return getStatusCode(manifest, options).should.eventually.throw;
+      return expect(getStatusCode(manifest, options)).to.be.rejected;
     });
   });
 });
