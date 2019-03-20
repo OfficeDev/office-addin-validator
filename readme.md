@@ -1,3 +1,15 @@
+---
+topic: sample
+products:
+- Office 365
+languages:
+- TypeScript
+extensions:
+  contentType: tools
+  technologies:
+  - Add-ins
+  createdDate: 1/19/2017 10:20:02 AM
+---
 # Microsoft Office Add-in Manifest Validator
 
 [![npm version](https://badge.fury.io/js/office-addin-validator.svg)](http://badge.fury.io/js/office-addin-validator)
