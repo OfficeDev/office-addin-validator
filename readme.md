@@ -2,8 +2,13 @@
 topic: sample
 products:
 - Office 365
+- Excel
+- Word
+- PowerPoint
+- Outlook
 languages:
 - TypeScript
+- JavaScript
 extensions:
   contentType: tools
   technologies:
