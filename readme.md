@@ -7,5 +7,5 @@
 [![Downloads](http://img.shields.io/npm/dm/office-addin-validator.svg)](https://npmjs.org/package/office-addin-validator)
 [![TravisCI Build Status](https://travis-ci.org/OfficeDev/office-addin-validator.svg)](https://travis-ci.org/OfficeDev/office-addin-validator)
 
-> Code has been moved to a new package - [office-addin-manifest](https://github.com/OfficeDev/Office-Addin-Scripts/tree/master/packages/office-addin-manifest).
+> Functionality has moved to a new package - [office-addin-manifest](https://github.com/OfficeDev/Office-Addin-Scripts/tree/master/packages/office-addin-manifest).
 
